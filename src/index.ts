@@ -11,7 +11,7 @@ function greet(name: string): string {
 function main(): void {
   const message = greet("TypeScript");
   console.log(message);
-  console.log("TypeScript project is running!");
+  console.log("TypeScript project is running! Hamis");
 }
 
 main();
