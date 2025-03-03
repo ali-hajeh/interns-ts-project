@@ -91,6 +91,77 @@ async function addTodo(): Promise<void> {
   }
 }
 
+async function updateTodo(): Promise<void> {
+  try {
+    // Ask the user for the ID of the todo to update
+    const id = parseInt(await ask("Enter todo ID to update: "));
+
+    // Check if the todo exists
+    const existingTodo = todoManager.getTodoById(id);
+    if (!existingTodo) {
+      console.log(`Todo with ID ${id} not found.`);
+      return;
+    }
+
+    // Display the current todo
+    console.log("\nCurrent Todo:", existingTodo);
+
+    // Ask the user which fields they want to update
+    console.log("\nWhich fields would you like to update?");
+    console.log("1. Title");
+    console.log("2. Description");
+    console.log("3. Due Date");
+    console.log("4. Priority");
+    console.log("5. Status");
+    console.log("6. Tags");
+    console.log("7. Cancel");
+
+    const fieldChoice = await ask("Enter your choice (1-7): ");
+
+    let updates: Partial<Todo> = {};
+
+    switch (fieldChoice) {
+      case "1": // Update title
+        updates.title = await ask("Enter new title: ");
+        break;
+      case "2": // Update description
+        updates.description = await ask("Enter new description: ");
+        break;
+      case "3": // Update due date
+        const dueDateStr = await ask("Enter new due date (YYYY-MM-DD): ");
+        updates.dueDate = new Date(dueDateStr);
+        break;
+      case "4": // Update priority
+        const priorityStr = await ask("Enter new priority (LOW/MEDIUM/HIGH): ");
+        updates.priority = getPriority(priorityStr);
+        break;
+      case "5": // Update status
+        const statusStr = await ask(
+          "Enter new status (NOT_STARTED/IN_PROGRESS/COMPLETED): "
+        );
+        updates.status = getStatus(statusStr);
+        break;
+      case "6": // Update tags
+        const tagsStr = await ask("Enter new tags (comma-separated): ");
+        updates.tags = tagsStr.split(",").map((tag) => tag.trim());
+        break;
+      case "7": // Cancel
+        console.log("Update canceled.");
+        return;
+      default:
+        console.log("Invalid choice. Update canceled.");
+        return;
+    }
+
+    // Perform the update
+    const updatedTodo = todoManager.updateTodo(id, updates);
+    console.log("\nTodo updated successfully:", updatedTodo);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("\nError updating todo:", error.message);
+    }
+  }
+}
 async function main() {
   while (true) {
     displayMenu();
@@ -110,7 +181,7 @@ async function main() {
           break;
         case "4":
           // TODO: Implement update todo
-          console.log("Update todo - Not implemented yet");
+          await updateTodo();
           break;
         case "5":
           const deleteId = parseInt(await ask("Enter todo ID to delete: "));
@@ -156,3 +227,4 @@ async function main() {
 
 // Start the application
 main().catch(console.error);
+

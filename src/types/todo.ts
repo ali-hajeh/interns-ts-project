@@ -53,5 +53,4 @@ export function isTodo(obj: any): obj is Todo {
     Object.values(Status).includes(obj.status) &&
     Array.isArray(obj.tags) &&
     obj.tags.every((tag: any) => typeof tag === "string")
-  );
-}
+  );}
