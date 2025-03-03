@@ -8,9 +8,9 @@ import * as readline from "readline";
 
 const todoManager = new TodoManager<Todo>();
 
-// Create readline interface
+// Create readline interfacee
 const rl = readline.createInterface({
-  input: process.stdin,
+  input: process.stdin ,
   output: process.stdout,
 });
 
