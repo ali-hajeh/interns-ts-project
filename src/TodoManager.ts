@@ -16,39 +16,88 @@ export class TodoManager<T extends Todo> {
     this.nextId = 1;
   }
 
-  // TODO: Implement this method to add a new todo
+  //  add a new todo
   addTodo(todo: Omit<T, "id">): T {
-    throw new Error("Method not implemented.");
+    const id = this.nextId;
+    const newTodo = { ...todo, id};
+    if (this.validateTodo(newTodo))
+    {
+      this.todos.set(id, newTodo);
+      this.nextId ++;
+      return newTodo;
+    }
+
+    throw new Error("Invalid Input");
   }
 
-  // TODO: Implement this method to delete a todo by ID
+  //  delete a todo by ID
   deleteTodo(id: number): void {
-    throw new Error("Method not implemented.");
+    if (this.todos.has(id))
+    {
+      this.todos.delete(id);
+      return;
+    }
+    throw new Error(`id = ${id} is not found.`);
   }
 
-  // TODO: Implement this method to update an existing todo
+  //  update an existing todo
   updateTodo(id: number, updates: Partial<Omit<T, "id">>): T {
-    throw new Error("Method not implemented.");
+    const todo = this.todos.get(id);
+    if (!(this.todos.has(id)))
+      throw new Error(`id = ${id} is not found.`);
+    const upTodo = { ...todo, ...updates};
+    if (this.validateTodo(upTodo)) {
+      this.todos.set(id, upTodo);
+      return upTodo;
+    }
+
+    throw new Error("Invalid input.");
   }
 
-  // TODO: Implement this method to get a todo by ID
+  // get a todo by ID
   getTodoById(id: number): T {
-    throw new Error("Method not implemented.");
+    const todo = this.todos.get(id);
+    if(todo)
+      return todo;
+    throw new TodoNotFoundError(id);
   }
 
-  // TODO: Implement this method to list all todos
+  //  list all todos
   listTodos(): T[] {
-    throw new Error("Method not implemented.");
+    return [...this.todos.values()];
   }
 
-  // TODO: Implement this method to filter todos based on criteria
+  //  filter todos based on criteria
   filterTodos(filter: TodoFilter): T[] {
-    throw new Error("Method not implemented.");
-  }
+      if (!filter.priority && !filter.status && !filter.tags) {
+        return Array.from(this.todos.values());
+      }
+    
+      return Array.from(this.todos.values()).filter((todo) => {
+        let matches = true;
+    
+        if (filter.priority && todo.priority !== filter.priority) {
+          matches = false;
+        }
+        if (filter.status && todo.status !== filter.status) {
+          matches = false;
+        }
+        if (filter.tags && !filter.tags.every((tag) => todo.tags.includes(tag))) {
+          matches = false;
+        }
+    
+        return matches;
+      });
+    }
+  
 
-  // TODO: Implement this method to search todos by title or description
+  // search todos by title or description
   searchTodos(searchTerm: string): T[] {
-    throw new Error("Method not implemented.");
+    return Array.from(this.todos.values()).filter(
+      (todo) =>
+        todo.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        todo.description.toLowerCase().includes(searchTerm.toLowerCase())
+    );
   }
 
   // Helper method to validate todo object
