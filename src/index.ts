@@ -109,8 +109,34 @@ async function main() {
           console.log("\nTodo:", todoManager.getTodoById(id));
           break;
         case "4":
-          // TODO: Implement update todo
-          console.log("Update todo - Not implemented yet");
+          try {
+            const updateId = parseInt(await ask("Enter todo ID to update: "));
+            const existingTodo = todoManager.getTodoById(updateId);
+            
+            console.log("\nCurrent Todo Details:", existingTodo);
+        
+            const newTitle = await ask(`Enter new title (${existingTodo.title}): `);
+            const newDescription = await ask(`Enter new description (${existingTodo.description}): `);
+            const newDueDateStr = await ask(`Enter new due date (${existingTodo.dueDate.toISOString().split("T")[0]}): `);
+            const newPriorityStr = await ask(`Enter new priority (LOW/MEDIUM/HIGH, ${existingTodo.priority}): `);
+            const newStatusStr = await ask(`Enter new status (NOT_STARTED/IN_PROGRESS/COMPLETED, ${existingTodo.status}): `);
+            const newTagsStr = await ask(`Enter new tags (comma-separated, ${existingTodo.tags.join(", ")}): `);
+        
+            const updatedTodo = todoManager.updateTodo(updateId, {
+              title: newTitle || existingTodo.title,
+              description: newDescription || existingTodo.description,
+              dueDate: newDueDateStr ? new Date(newDueDateStr) : existingTodo.dueDate,
+              priority: newPriorityStr ? getPriority(newPriorityStr) : existingTodo.priority,
+              status: newStatusStr ? getStatus(newStatusStr) : existingTodo.status,
+              tags: newTagsStr ? newTagsStr.split(",").map(tag => tag.trim()) : existingTodo.tags,
+            });
+        
+            console.log("\nTodo updated successfully:", updatedTodo);
+          } catch (error) {
+            if (error instanceof Error) {
+              console.error("\nError updating todo:", error.message);
+            }
+          }
           break;
         case "5":
           const deleteId = parseInt(await ask("Enter todo ID to delete: "));
